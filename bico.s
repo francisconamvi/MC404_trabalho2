@@ -1,0 +1,1 @@
+#O código da subcamada BiCo deve implementar as rotinas da API de Controle em linguagem de montagem do RISC-V. A API está descrita no arquivo "api_robot.h". Para controlar o hardware, o código deve realizar chamadas ao sistema, ou syscalls. As syscalls são definidas abaixo.
