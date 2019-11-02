@@ -8,9 +8,39 @@ int_handler:
 	sw a2, 4(t6) # salva a2
 	sw a3, 8(t6) # salva a3
 	sw a4, 12(t6) # salva a4
+	sw t0, 16(t6) # salva t0
+	sw t1, 20(t6) # salva t0
+	sw t2, 24(t6) # salva t0
+	sw t3, 28(t6) # salva t0
+	sw t4, 32(t6) # salva t0
+	sw t5, 36(t6) # salva t0
 
-    # <= Implemente o tratamento da sua syscall aqui 
+    # <= Implemente o tratamento da sua syscall aqui
+	li t0, 18
+	beq t0, a7, set_engine_torque2
 
+	set_engine_torque2:
+	beq zero, a0, set_engine_torque_esq
+	j set_engine_torque_dir
+	
+	set_engine_torque_esq:
+		li t0, 0xFFFF001A
+		sw a1, 0(t0)
+		j final
+
+	set_engine_torque_dir:
+		li t0, 0xFFFF0018
+		sw a1, 0(t0)
+		j final
+
+	final:
+
+	lw t5, 36(t6) # salva t0
+	lw t4, 32(t6) # salva t0
+	lw t3, 28(t6) # salva t0
+	lw t2, 24(t6) # salva t0
+	lw t1, 20(t6) # salva t0
+	lw t0, 16(t6) # salva t0
     lw a4, 12(t6)
 	lw a3, 8(t6)
 	lw a2, 4(t6)

@@ -11,7 +11,9 @@ O terreno poderá conter obstáculos, além de montanhas muito íngremes. Estes 
 */
 
 int main(){
-    
+    //Dois torques
+    int a;
+    a = set_engine_torque(0, 50);
 
     return 0;
 }
