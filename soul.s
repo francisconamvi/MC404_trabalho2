@@ -15,6 +15,7 @@ int_handler:
 	sw t3, 28(t6) # salva t0
 	sw t4, 32(t6) # salva t0
 	sw t5, 36(t6) # salva t0
+	sw ra, 40(t6)
 
     # <= Implemente o tratamento da sua syscall aqui
 	li t0, 18
@@ -36,6 +37,7 @@ int_handler:
 
 
 	final:
+	lw ra, 40(t6)
 	lw t5, 36(t6) # salva t0
 	lw t4, 32(t6) # salva t0
 	lw t3, 28(t6) # salva t0

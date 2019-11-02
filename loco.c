@@ -12,7 +12,8 @@ O terreno poderá conter obstáculos, além de montanhas muito íngremes. Estes 
 #include "api_robot2.h"
 
 int main(){
-    set_engine_torque(0, 10);
+    set_engine_torque(0, 100);
+    set_engine_torque(1, 100);
 
     return 0;
 }
