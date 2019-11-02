@@ -1,5 +1,6 @@
 #A subcamada SOUL deve gerenciar o hardware do sistema e prover serviços para a subcamada BiCo através das chamadas de sistemas.
 
+.align 4
 int_handler:
   	###### Tratador de interrupções e syscalls ######
 	#salva contexto
@@ -17,24 +18,24 @@ int_handler:
 
     # <= Implemente o tratamento da sua syscall aqui
 	li t0, 18
-	beq t0, a7, set_engine_torque2
+	beq t0, a7, set_engine_torque_int
 
-	set_engine_torque2:
+	set_engine_torque_int:
 	beq zero, a0, set_engine_torque_esq
 	j set_engine_torque_dir
 	
 	set_engine_torque_esq:
 		li t0, 0xFFFF001A
-		sw a1, 0(t0)
+		sh a1, 0(t0)
 		j final
 
 	set_engine_torque_dir:
 		li t0, 0xFFFF0018
-		sw a1, 0(t0)
+		sh a1, 0(t0)
 		j final
 
-	final:
 
+	final:
 	lw t5, 36(t6) # salva t0
 	lw t4, 32(t6) # salva t0
 	lw t3, 28(t6) # salva t0
@@ -73,16 +74,29 @@ _start:
 	# Ajusta o mscratch
 	la t1, reg_buffer # Coloca o endereço do buffer para salvar
 	csrw mscratch, t1 # registradores em mscratch
-	li sp, 134217724 #seta o endereço da pilha
+	li sp, 0x7fffffc #seta o endereço da pilha
 	
 	# Muda para o Modo de usuário
 	csrr t1, mstatus # Seta os bits 11 e 12 (MPP)
 	li t2, ~0x1800 # do registrador mstatus
 	and t1, t1, t2 # com o valor 00
 	csrw mstatus, t1
-	la t0, main # Grava o endereço do rótulo main
+	la t0, user # Grava o endereço do rótulo user
 	csrw mepc, t0 # no registrador mepc
 	mret # PC <= MEPC; MIE <= MPIE; Muda modo para MPP
 
 .align 4
+user:
+	call main
+	# li a0, 0
+	# li a1, 10
+	# jal set_engine_torque
+
+	loop_infinito:
+		nop
+		j loop_infinito
+
+.align 4
 reg_buffer: .skip 4000
+
+###

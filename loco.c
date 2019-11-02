@@ -9,11 +9,10 @@ O Uóli deve se manter a pelo menos 10 metros de distância de posições perigo
 Note que o Uóli não consegue subir montanhas muito íngremes. Você deve identificar estes casos e programá-lo para que ele contorne os obstáculos.
 O terreno poderá conter obstáculos, além de montanhas muito íngremes. Estes obstáculos devem ser desviados, pois a colisão com estes pode afetar a trajetória ou mesmo o funcionamento do Uóli.
 */
+#include "api_robot2.h"
 
 int main(){
-    //Dois torques
-    int a;
-    a = set_engine_torque(0, 50);
+    set_engine_torque(0, 10);
 
     return 0;
 }
