@@ -10,3 +10,8 @@ Note que o Uóli não consegue subir montanhas muito íngremes. Você deve ident
 O terreno poderá conter obstáculos, além de montanhas muito íngremes. Estes obstáculos devem ser desviados, pois a colisão com estes pode afetar a trajetória ou mesmo o funcionamento do Uóli.
 */
 
+int main(){
+    
+
+    return 0;
+}
