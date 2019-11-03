@@ -2,7 +2,61 @@
 .globl set_engine_torque
 set_engine_torque:
     #a0 é o parâmetro id do motor e a1 e o parametro torque do motor
+    #verificar se torque está no range
+    li t0, 100
+    bgt a1, t0, set_engine_torque_invalido
+    li t0, -100
+    blt a1, t0, set_engine_torque_invalido
+    #se chegou ate aqui, é um valor valido
+
     li a7, 18
     ecall
-    
+    #se a0 for menor que 0, id invalido, retorna -2
+    blt a0, zero, set_engine_torque_id_invalido 
+    li a0, 0
     ret
+
+    set_engine_torque_id_invalido:
+    li a0, -2
+    ret
+
+    set_engine_torque_invalido:
+    li a0, -1
+    ret
+
+
+
+.globl set_torque
+set_torque:
+    #a0 é o valor do torque da esquerda
+    #a1 é o valor do torque da direita
+    
+    #tem que verificar os valores
+    li t0, 100
+    bgt a0, t0, set_torque_invalido
+    bgt a1, t0, set_torque_invalido
+    li t0, -100
+    blt a0, t0, set_torque_invalido
+    blt a1, t0, set_torque_invalido
+
+    #configurar motor esquerdo
+    mv s2, a1 #guarda valor do torque da direita em s2 
+    mv a1, a0 #coloca o valor do torque da esqueda em a1
+    li a0, 0 #id = 0 é o toque da esquerda
+    li a7, 18 #syscall set_engine_torque_int
+    ecall
+
+    #configurar motor direito
+    mv a1, s2 #coloca o valor do torque da direita em a1
+    li a0, 1 #id = 1 é o toque da direita
+    li a7, 18 #syscall set_engine_torque_int
+    ecall
+    
+    li a0, 0
+    ret
+    
+    set_torque_invalido:
+    li a0, -1
+    ret
+
+####

@@ -16,6 +16,18 @@ int_handler:
 	sw t4, 32(t6) # salva t0
 	sw t5, 36(t6) # salva t0
 	sw ra, 40(t6)
+	sw s1, 44(t6)
+	sw s2, 48(t6)
+	sw s3, 52(t6)
+	sw s4, 56(t6)
+	sw s5, 60(t6)
+	sw s6, 64(t6)
+	sw s7, 68(t6)
+	sw s8, 72(t6)
+	sw s9, 76(t6)
+	sw s10, 80(t6)
+	sw s11, 84(t6)
+
 
     # <= Implemente o tratamento da sua syscall aqui
 	li t0, 18
@@ -23,20 +35,36 @@ int_handler:
 
 	set_engine_torque_int:
 	beq zero, a0, set_engine_torque_esq
-	j set_engine_torque_dir
-	
+	li t1, 1
+	beq t1, a0, set_engine_torque_dir
+	li a0, -1 #id invalido, retorna -1
+	j final
+
 	set_engine_torque_esq:
 		li t0, 0xFFFF001A
 		sh a1, 0(t0)
+		li a0, 0
 		j final
 
 	set_engine_torque_dir:
 		li t0, 0xFFFF0018
 		sh a1, 0(t0)
+		li a0, 0
 		j final
 
 
 	final:
+	sw s11, 84(t6)
+	sw s10, 80(t6)
+	sw s9, 76(t6)
+	sw s8, 72(t6)
+	sw s7, 68(t6)
+	sw s6, 64(t6)
+	sw s5, 60(t6)
+	sw s4, 56(t6)
+	sw s3, 52(t6)
+	sw s2, 48(t6)
+	sw s1, 44(t6)
 	lw ra, 40(t6)
 	lw t5, 36(t6) # salva t0
 	lw t4, 32(t6) # salva t0
