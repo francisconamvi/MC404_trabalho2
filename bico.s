@@ -68,7 +68,7 @@ set_head_servo:
     li t0, -1
     beq t0, a0, servo_angle_errado
     li t0, -2
-    beq t0, a0, servo_angle_errado
+    beq t0, a0, servo_id_errado
     ret
 
     servo_id_invalido:
