@@ -67,4 +67,13 @@ set_head_servo:
     ecall
     ret
 
+.globl get_us_distance
+get_us_distance:
+    #nao tem parametros
+    li a7, 16
+    ecall
+    
+    ret
+
+
 ####

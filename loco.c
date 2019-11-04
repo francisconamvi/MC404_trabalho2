@@ -12,20 +12,21 @@ O terreno poderá conter obstáculos, além de montanhas muito íngremes. Estes 
 #include "api_robot2.h"
 
 int main(){
-    // set_engine_torque(0, 100);
-    // if(set_engine_torque(2, 100)==-2){
-    //     set_torque(-100,-100);
-    // }
-    // set_head_servo(0, 16);
-    // set_head_servo(1, 52);
-    set_head_servo(2, 0);
     
-    // if(set_torque(-50,-100)==-1){
-    //     set_torque(100,100);
-    // }
-    // else{
-    //     set_torque(-100, -100);
-    // }
+    /*tem que apagar isso depois, soul que tem que configurar*/
+    set_head_servo(0, 31);
+    set_head_servo(1, 80);
+    set_head_servo(2, 78);
+    
+    set_torque(40,40);
+    
+    while(get_us_distance()==-1){ // ou seja, nada a frente
+        set_torque(40,40);
+    }
+    
+    set_head_servo(0, 115);
+    set_head_servo(1, 90);
+
 
     return 0;
 }

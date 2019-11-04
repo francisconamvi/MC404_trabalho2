@@ -30,11 +30,14 @@ int_handler:
 
 
     # <= Implemente o tratamento da sua syscall aqui
-	li t0, 18
-	beq t0, a7, set_engine_torque_int
+	li t0, 16
+	beq t0, a7, read_ultrasonic_sensor
 	li t0, 17
 	beq t0, a7, set_servo_angles
+	li t0, 18
+	beq t0, a7, set_engine_torque_int
 
+	######### ENGINE_TORQUE #########
 	set_engine_torque_int:
 	beq zero, a0, set_engine_torque_esq
 	li t1, 1
@@ -54,6 +57,7 @@ int_handler:
 		li a0, 0
 		j final
 
+	######### SERVO_ALGLES #########
 	set_servo_angles:
 	beq zero, a0, set_servo_angle_base
 	li t0, 1
@@ -95,6 +99,19 @@ int_handler:
 	servo_motor_ang_invalido:
 		li a0, -1
 		j final
+
+	######### ULTRASONIC_SENSOR #########
+	read_ultrasonic_sensor:
+		li t0, 0xFFFF0020
+		sw zero, 0(t0)
+		wait_us:
+			lw t1, 0(t0)
+			beq zero, t1, wait_us
+			#se nao voltar no wait_us, é porque us está pronto pra ser lido
+		li t0, 0xFFFF0024
+		lw a0, 0(t0) #valor de retorno do ultrassom, de 0 a 600 ou -1
+		j final
+
 
 	final:
 	sw s11, 84(t6)
