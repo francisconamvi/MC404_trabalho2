@@ -32,6 +32,8 @@ int_handler:
     # <= Implemente o tratamento da sua syscall aqui
 	li t0, 18
 	beq t0, a7, set_engine_torque_int
+	li t0, 17
+	beq t0, a7, set_servo_angles
 
 	set_engine_torque_int:
 	beq zero, a0, set_engine_torque_esq
@@ -52,6 +54,47 @@ int_handler:
 		li a0, 0
 		j final
 
+	set_servo_angles:
+	beq zero, a0, set_servo_angle_base
+	li t0, 1
+	beq t0, a0, set_servo_angle_mid
+	li t0, 2
+	beq t0, a0, set_servo_angle_top
+	li a0, -1
+	j final
+
+    set_servo_angle_top:
+		li t0, 156
+		blt a1, zero, servo_motor_ang_invalido
+		bgt a1, t0, servo_motor_ang_invalido
+		li t0, 0xFFFF001C
+		sb a1, 0(t0)
+		li a0, 0
+		j final
+
+    set_servo_angle_mid:
+		li t0, 52
+		li t1, 90
+		blt a1, t0, servo_motor_ang_invalido
+		bgt a1, t1, servo_motor_ang_invalido
+		li t0, 0xFFFF001D
+		sb a1, 0(t0)
+		li a0, 0
+		j final
+
+    set_servo_angle_base:
+		li t0, 16
+		li t1, 116
+		blt a1, t0, servo_motor_ang_invalido
+		bgt a1, t1, servo_motor_ang_invalido
+		li t0, 0xFFFF001E
+		sb a1, 0(t0)
+		li a0, 0
+		j final
+
+	servo_motor_ang_invalido:
+		li a0, -1
+		j final
 
 	final:
 	sw s11, 84(t6)

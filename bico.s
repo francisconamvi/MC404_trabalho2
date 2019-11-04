@@ -59,4 +59,12 @@ set_torque:
     li a0, -1
     ret
 
+.globl set_head_servo
+set_head_servo:
+    #a0 é o identificador do servo motor 0/1/2 = base/mid/top
+    #a1 é o angulo
+    li a7, 17
+    ecall
+    ret
+
 ####

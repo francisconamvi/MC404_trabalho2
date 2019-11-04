@@ -13,10 +13,12 @@ O terreno poderá conter obstáculos, além de montanhas muito íngremes. Estes 
 
 int main(){
     // set_engine_torque(0, 100);
-    if(set_engine_torque(2, 100)==-2){
-        set_torque(-100,-100);
-
-    }
+    // if(set_engine_torque(2, 100)==-2){
+    //     set_torque(-100,-100);
+    // }
+    // set_head_servo(0, 16);
+    // set_head_servo(1, 52);
+    set_head_servo(2, 0);
     
     // if(set_torque(-50,-100)==-1){
     //     set_torque(100,100);
