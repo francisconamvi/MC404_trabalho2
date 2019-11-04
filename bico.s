@@ -65,6 +65,17 @@ set_head_servo:
     #a1 é o angulo
     li a7, 17
     ecall
+    li t0, -1
+    beq t0, a0, servo_angle_errado
+    li t0, -2
+    beq t0, a0, servo_angle_errado
+    ret
+
+    servo_id_invalido:
+    li a0, -1
+    ret
+    servo_angle_errado:
+    li a0, -2
     ret
 
 .globl get_us_distance

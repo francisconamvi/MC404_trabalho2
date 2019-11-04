@@ -64,7 +64,7 @@ int_handler:
 	beq t0, a0, set_servo_angle_mid
 	li t0, 2
 	beq t0, a0, set_servo_angle_top
-	li a0, -1
+	li a0, -2
 	j final
 
     set_servo_angle_top:
