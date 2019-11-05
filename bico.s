@@ -66,15 +66,15 @@ set_head_servo:
     li a7, 17
     ecall
     li t0, -1
-    beq t0, a0, servo_angle_errado
+    beq t0, a0, servo_angle_invalido
     li t0, -2
-    beq t0, a0, servo_id_errado
+    beq t0, a0, servo_id_invalido
     ret
 
     servo_id_invalido:
     li a0, -1
     ret
-    servo_angle_errado:
+    servo_angle_invalido:
     li a0, -2
     ret
 
@@ -86,5 +86,12 @@ get_us_distance:
     
     ret
 
+.globl get_current_GPS_position
+get_current_GPS_position:
+    #a0 tem um ponteiro para a estrutura de uma posicao
+    li a7, 19
+    ecall
+
+    ret
 
 ####

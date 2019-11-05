@@ -36,6 +36,8 @@ int_handler:
 	beq t0, a7, set_servo_angles
 	li t0, 18
 	beq t0, a7, set_engine_torque_int
+	li t0, 19
+	beq t0, a7, get_position
 
 	######### ENGINE_TORQUE #########
 	set_engine_torque_int:
@@ -57,7 +59,7 @@ int_handler:
 		li a0, 0
 		j final
 
-	######### SERVO_ALGLES #########
+	######### SERVO_ANGLES #########
 	set_servo_angles:
 	beq zero, a0, set_servo_angle_base
 	li t0, 1
@@ -112,6 +114,20 @@ int_handler:
 		lw a0, 0(t0) #valor de retorno do ultrassom, de 0 a 600 ou -1
 		j final
 
+	######### GET_POSITION #########
+	get_position:
+		li t0, 0xFFFF0004
+		sw zero, 0(t0)
+		#armazena a posicao de x
+		li t0, 0xFFFF0008
+		sw t0, 0(a0)
+		#armazena a posicao de y
+		li t0, 0xFFFF000C
+		sw t0, 4(a0)
+		#armazena a posicao de z
+		li t0, 0xFFFF0010
+		sw t0, 8(a0)
+	j final
 
 	final:
 	sw s11, 84(t6)
