@@ -83,7 +83,12 @@ get_us_distance:
     #nao tem parametros
     li a7, 16
     ecall
-    
+    bge a0, zero, fim_get_us_distance #se retorno for maior ou igual a 0, manda pro retorno
+    #se nao, é porque deu -1
+    #como a funcao é unsigned, vamos retornar 0xFFFF neste caso
+    li a0, 0xFFFF
+
+    fim_get_us_distance:
     ret
 
 .globl get_current_GPS_position
@@ -91,6 +96,10 @@ get_current_GPS_position:
     #a0 tem um ponteiro para a estrutura de uma posicao
     li a7, 19
     ecall
+    lw t0, 0(a0)
+    lw t1, 4(a0)
+    lw t2, 8(a0)
+    pao:
 
     ret
 
