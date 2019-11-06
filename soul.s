@@ -45,6 +45,8 @@ int_handler:
 	beq t0, a7, read_gps
 	li t0, 20
 	beq t0, a7, read_gyroscope
+	li t0, 21
+	beq t0, a7, get_times
 	li t0, 64
 	beq t0, a7, write
 
@@ -197,6 +199,14 @@ int_handler:
 		sw t1, 8(a0)
 		j final
 
+	######### GET_TIME #########
+	get_times:
+		la t0, system_time
+		lw t0, 0(t0)
+		addi a0, t0, 0
+		j final
+
+	######### WRITE #########
 	write:
 		li a0, 0
 		write_inicio:
@@ -256,12 +266,12 @@ _start:
 	# Ajustes iniciais
 	la t0, system_time
 	sw zero, 0(t0)
-
+	##################################        DA ERRO      ##################################################
 	#configura GPT
-	li t3, 0
-	li t4, 0xFFFF0100
-	sw t3, 0(t4)
-	
+	# li t3, 100
+	# li t4, 0xFFFF0100
+	# sw t3, 0(t4)
+	##################################        DA ERRO      ##################################################
 	#configura torque pra zero
 	li t0, 0xFFFF001A
 	sh zero, 0(t0)

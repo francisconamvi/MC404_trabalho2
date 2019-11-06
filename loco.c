@@ -11,17 +11,46 @@ O terreno poderá conter obstáculos, além de montanhas muito íngremes. Estes 
 */
 #include "api_robot2.h"
 
-int main(){
-    
-    set_torque(20,20);
-    
-    while(get_us_distance()>600){ // ou seja, coisas longe
-        puts("pao\n");
+void tostring(char str[], int num)
+{
+    int i, rem, len = 0, n;
+ 
+    n = num;
+    while (n != 0)
+    {
+        len++;
+        n /= 10;
     }
-    
-    set_torque(-5,-5);
+    for (i = 0; i < len; i++)
+    {
+        rem = num % 10;
+        num = num / 10;
+        str[len - (i + 1)] = rem + '0';
+    }
+    str[len] = '\n';
+    str[len + 1] = '\0';
+}
+
+
+int main(){
+    int n;
+    char time[10000];
+    char pos[10000];
+    set_torque(20,20);
+    //set_torque(-5,-5);
+    while(get_us_distance() > 600){
+        tostring(pos, get_us_distance());
+        puts(pos);
+    }
     set_head_servo(0, 115);
-    set_head_servo(1, 90);
+     set_head_servo(1, 90);
+    tostring(pos, get_us_distance());
+    puts(pos);
+    
+    tostring(time, get_time());
+    puts(time);
+    
+    
 
     return 0;
 }
