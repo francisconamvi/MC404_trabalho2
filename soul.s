@@ -122,7 +122,7 @@ int_handler:
 			li t0, 0xFFFF0004
 			lw t1, 0(t0)
 			beq zero, t1, wait_pos
-			#se nao voltar no wait_pos, é porque não acabou de ler
+			#se nao voltar no wait_pos, é porque acabou de ler
 		#armazena a posicao de x
 		li t0, 0xFFFF0008
 		lw t1, 0(t0)
