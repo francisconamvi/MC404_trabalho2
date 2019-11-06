@@ -118,15 +118,23 @@ int_handler:
 	get_position:
 		li t0, 0xFFFF0004
 		sw zero, 0(t0)
+		wait_pos:
+			li t0, 0xFFFF0004
+			lw t1, 0(t0)
+			beq zero, t1, wait_pos
+			#se nao voltar no wait_pos, é porque não acabou de ler
 		#armazena a posicao de x
 		li t0, 0xFFFF0008
-		sw t0, 0(a0)
+		lw t1, 0(t0)
+		sw t1, 0(a0)
 		#armazena a posicao de y
 		li t0, 0xFFFF000C
-		sw t0, 4(a0)
+		lw t1, 0(t0)
+		sw t1, 4(a0)
 		#armazena a posicao de z
 		li t0, 0xFFFF0010
-		sw t0, 8(a0)
+		lw t1, 0(t0)
+		sw t1, 8(a0)
 	j final
 
 	final:
