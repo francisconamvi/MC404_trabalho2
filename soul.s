@@ -3,6 +3,7 @@
 .align 4
 int_handler:
   	###### Tratador de interrupções e syscalls ######
+
 	#salva contexto
 	csrrw t6, mscratch, t6 # troca valor de t6 com mscratch
 	sw a1, 0(t6) # salva a1
@@ -30,6 +31,10 @@ int_handler:
 
 
     # <= Implemente o tratamento da sua syscall aqui
+	#verifica se é GPT
+	csrr t0, mcause
+	blt t0, zero, GPT_handler
+	#nao é o GPT
 	li t0, 16
 	beq t0, a7, read_ultrasonic_sensor
 	li t0, 17
@@ -37,7 +42,31 @@ int_handler:
 	li t0, 18
 	beq t0, a7, set_engine_torque_int
 	li t0, 19
-	beq t0, a7, get_position
+	beq t0, a7, read_gps
+	li t0, 20
+	beq t0, a7, read_gyroscope
+	li t0, 64
+	beq t0, a7, write
+
+	######### GPT #########
+	GPT_handler:
+		li t0, 0xFFFF0104
+		lb t1, 0(t0)
+		beq t1, zero, final
+		
+		#se chegou aqui, GPT-IO = 1, zerar ele pois a int sera tratada
+		sb zero, 0(t0)
+
+		#aumentar system_time
+		la t0, system_time
+		lw t1, 0(t0)
+		addi t1, t1, 100
+		sw t1, 0(t0)
+
+		li t3, 100
+		li t4, 0xFFFF0100
+		sw t3, 0(t4)
+		j final
 
 	######### ENGINE_TORQUE #########
 	set_engine_torque_int:
@@ -115,14 +144,14 @@ int_handler:
 		j final
 
 	######### GET_POSITION #########
-	get_position:
+	read_gps:
 		li t0, 0xFFFF0004
 		sw zero, 0(t0)
-		wait_pos:
+		wait_gps:
 			li t0, 0xFFFF0004
 			lw t1, 0(t0)
-			beq zero, t1, wait_pos
-			#se nao voltar no wait_pos, é porque acabou de ler
+			beq zero, t1, wait_gps
+			#se nao voltar no wait_gps, é porque acabou de ler
 		#armazena a posicao de x
 		li t0, 0xFFFF0008
 		lw t1, 0(t0)
@@ -135,7 +164,60 @@ int_handler:
 		li t0, 0xFFFF0010
 		lw t1, 0(t0)
 		sw t1, 8(a0)
-	j final
+		j final
+
+	read_gyroscope:
+		li t0, 0xFFFF0004
+		sw zero, 0(t0)
+		wait_gyros:
+			li t0, 0xFFFF0004
+			lw t1, 0(t0)
+			beq zero, t1, wait_gyros
+			#se nao voltar no wait_gyros, é porque acabou de ler
+		#armazena a posicao de x
+		li t0, 0xFFFF0014
+		lw t1, 0(t0)
+		li t2, 0x3FF00000
+		and t1, t1, t2
+		srli t1, t1, 20
+		sw t1, 0(a0)
+		#armazena a posicao de y
+		li t0, 0xFFFF0014
+		lw t1, 0(t0)
+		li t2, 0x000FFC00
+		and t1, t1, t2
+		srli t1, t1, 10
+		sw t1, 4(a0)
+		#armazena a posicao de z
+		li t0, 0xFFFF0014
+		lw t1, 0(t0)
+		li t2, 0x000003FF
+		and t1, t1, t2
+		srli t1, t1, 0
+		sw t1, 8(a0)
+		j final
+
+	write:
+		li a0, 0
+		write_inicio:
+		#dar load byte na memoria
+		lb t0, 0(a1)
+		#verificar se é \0
+		beq zero, t0, final
+		addi a0, a0, 1
+		#se nao for, coloca no 0xFFFF0109
+		li t1, 0xFFFF0109
+		sb t0, 0(t1)
+		#poe 1 no 0xFFFF0108
+		li t1, 1
+		li t2, 0xFFFF0108
+		sb t1, 0(t2)
+		#verifica se é 0, se sim continua
+		verifica_write:
+		lb t1, 0(t2)
+		bne zero, t1, verifica_write
+		addi a1, a1, 1
+		j write
 
 	final:
 	sw s11, 84(t6)
@@ -170,6 +252,36 @@ int_handler:
 
 .globl _start
 _start:
+
+	# Ajustes iniciais
+	la t0, system_time
+	sw zero, 0(t0)
+
+	#configura GPT
+	li t3, 0
+	li t4, 0xFFFF0100
+	sw t3, 0(t4)
+	
+	#configura torque pra zero
+	li t0, 0xFFFF001A
+	sh zero, 0(t0)
+
+	li t0, 0xFFFF0018
+	sh zero, 0(t0)
+
+	#configura articulações cabeça
+	li t0, 0xFFFF001E
+	li t1, 31
+	sb t1, 0(t0)
+	
+	li t0, 0xFFFF001D
+	li t1, 80
+	sb t1, 0(t0)
+
+	li t0, 0xFFFF001C
+	li t1, 78
+	sb t1, 0(t0)
+
 	# Configura o tratador de interrupções
 	la t0, int_handler # Grava o endereço do rótulo int_handler
 	csrw mtvec, t0 # no registrador mtvec
@@ -189,7 +301,7 @@ _start:
 	la t1, reg_buffer # Coloca o endereço do buffer para salvar
 	csrw mscratch, t1 # registradores em mscratch
 	li sp, 0x7fffffc #seta o endereço da pilha
-	
+
 	# Muda para o Modo de usuário
 	csrr t1, mstatus # Seta os bits 11 e 12 (MPP)
 	li t2, ~0x1800 # do registrador mstatus
@@ -202,9 +314,6 @@ _start:
 .align 4
 user:
 	call main
-	# li a0, 0
-	# li a1, 10
-	# jal set_engine_torque
 
 	loop_infinito:
 		nop
@@ -212,5 +321,7 @@ user:
 
 .align 4
 reg_buffer: .skip 4000
+.align 4
+system_time: .skip 4
 
 ###

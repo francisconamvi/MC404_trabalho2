@@ -96,11 +96,29 @@ get_current_GPS_position:
     #a0 tem um ponteiro para a estrutura de uma posicao
     li a7, 19
     ecall
-    lw t0, 0(a0)
-    lw t1, 4(a0)
-    lw t2, 8(a0)
-    pao:
-
     ret
+
+.globl get_gyro_angles
+get_gyro_angles:
+    #a0 tem um ponteiro para a estrutura de uma posicao
+    li a7, 20
+    ecall
+    ret
+
+.globl puts
+puts:
+    #a0 tem o endereço do que será escrito
+    mv a1, a0
+    li a0, 1
+    li a2, 100
+    li a7, 64
+    ecall
+    ret
+
+.globl get_time
+get_time:
+    
+    ret
+
 
 ####
