@@ -54,7 +54,7 @@ int_handler:
 	GPT_handler:
 		li t0, 0xFFFF0104
 		lb t1, 0(t0)
-		beq t1, zero, final
+		beq t1, zero, final_gpt
 		
 		#se chegou aqui, GPT-IO = 1, zerar ele pois a int sera tratada
 		sb zero, 0(t0)
@@ -67,8 +67,8 @@ int_handler:
 
 		li t3, 100
 		li t4, 0xFFFF0100
-		sw t3, 0(t4)
-		j final
+		sw zero, 0(t4)
+		j final_gpt
 
 	######### ENGINE_TORQUE #########
 	set_engine_torque_int:
@@ -230,17 +230,22 @@ int_handler:
 		j write
 
 	final:
-	sw s11, 84(t6)
-	sw s10, 80(t6)
-	sw s9, 76(t6)
-	sw s8, 72(t6)
-	sw s7, 68(t6)
-	sw s6, 64(t6)
-	sw s5, 60(t6)
-	sw s4, 56(t6)
-	sw s3, 52(t6)
-	sw s2, 48(t6)
-	sw s1, 44(t6)
+	csrr t0, mepc  # carrega endereço de retorno (endereço da instrução que invocou a syscall)
+	addi t0, t0, 4 # soma 4 no endereço de retorno (para retornar após a ecall) 
+	csrw mepc, t0  # armazena endereço de retorno de volta no mepc
+
+	final_gpt:
+	lw s11, 84(t6)
+	lw s10, 80(t6)
+	lw s9, 76(t6)
+	lw s8, 72(t6)
+	lw s7, 68(t6)
+	lw s6, 64(t6)
+	lw s5, 60(t6)
+	lw s4, 56(t6)
+	lw s3, 52(t6)
+	lw s2, 48(t6)
+	lw s1, 44(t6)
 	lw ra, 40(t6)
 	lw t5, 36(t6) # salva t0
 	lw t4, 32(t6) # salva t0
@@ -252,11 +257,8 @@ int_handler:
 	lw a3, 8(t6)
 	lw a2, 4(t6)
 	lw a1, 0(t6)
-	csrrw t6, mscratch, t6 # troca valor de a0 com mscratch
+	csrrw t6, mscratch, t6 # troca valor de t6 com mscratch
 
-	csrr t0, mepc  # carrega endereço de retorno (endereço da instrução que invocou a syscall)
-	addi t0, t0, 4 # soma 4 no endereço de retorno (para retornar após a ecall) 
-	csrw mepc, t0  # armazena endereço de retorno de volta no mepc
 	mret           # Recuperar o restante do contexto (pc <- mepc)
 
 
@@ -268,9 +270,9 @@ _start:
 	sw zero, 0(t0)
 	##################################        DA ERRO      ##################################################
 	#configura GPT
-	# li t3, 100
-	# li t4, 0xFFFF0100
-	# sw t3, 0(t4)
+	li t3, 100
+	li t4, 0xFFFF0100
+	sw zero, 0(t4)
 	##################################        DA ERRO      ##################################################
 	#configura torque pra zero
 	li t0, 0xFFFF001A

@@ -43,14 +43,15 @@ int main(){
         puts(pos);
     }
     set_head_servo(0, 115);
-     set_head_servo(1, 90);
+    set_head_servo(1, 90);
+    
+    set_torque(1,1);
+
     tostring(pos, get_us_distance());
     puts(pos);
     
-    tostring(time, get_time());
-    puts(time);
-    
-    
+    //tostring(time, get_time());
+    //puts(time);
 
     return 0;
 }
