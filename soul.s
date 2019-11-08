@@ -6,16 +6,16 @@ int_handler:
 
 	#salva contexto
 	csrrw t6, mscratch, t6 # troca valor de t6 com mscratch
-	sw a1, 0(t6) # salva a1
-	sw a2, 4(t6) # salva a2
-	sw a3, 8(t6) # salva a3
-	sw a4, 12(t6) # salva a4
-	sw t0, 16(t6) # salva t0
-	sw t1, 20(t6) # salva t0
-	sw t2, 24(t6) # salva t0
-	sw t3, 28(t6) # salva t0
-	sw t4, 32(t6) # salva t0
-	sw t5, 36(t6) # salva t0
+	sw a1, 0(t6)
+	sw a2, 4(t6)
+	sw a3, 8(t6)
+	sw a4, 12(t6)
+	sw t0, 16(t6)
+	sw t1, 20(t6)
+	sw t2, 24(t6)
+	sw t3, 28(t6)
+	sw t4, 32(t6)
+	sw t5, 36(t6)
 	sw ra, 40(t6)
 	sw s1, 44(t6)
 	sw s2, 48(t6)
@@ -30,10 +30,12 @@ int_handler:
 	sw s11, 84(t6)
 
 
-    # <= Implemente o tratamento da sua syscall aqui
+    #Implementação do tratamento da syscall
+
 	#verifica se é GPT
 	csrr t0, mcause
 	blt t0, zero, GPT_handler
+
 	#nao é o GPT
 	li t0, 16
 	beq t0, a7, read_ultrasonic_sensor
@@ -47,6 +49,8 @@ int_handler:
 	beq t0, a7, read_gyroscope
 	li t0, 21
 	beq t0, a7, get_times
+	li t0, 22
+	beq t0, a7, set_times
 	li t0, 64
 	beq t0, a7, write
 
@@ -72,62 +76,62 @@ int_handler:
 
 	######### ENGINE_TORQUE #########
 	set_engine_torque_int:
-	beq zero, a0, set_engine_torque_esq
-	li t1, 1
-	beq t1, a0, set_engine_torque_dir
-	li a0, -1 #id invalido, retorna -1
-	j final
-
-	set_engine_torque_esq:
-		li t0, 0xFFFF001A
-		sh a1, 0(t0)
-		li a0, 0
+		beq zero, a0, set_engine_torque_esq
+		li t1, 1
+		beq t1, a0, set_engine_torque_dir
+		li a0, -1 #id invalido, retorna -1
 		j final
 
-	set_engine_torque_dir:
-		li t0, 0xFFFF0018
-		sh a1, 0(t0)
-		li a0, 0
-		j final
+		set_engine_torque_esq:
+			li t0, 0xFFFF001A
+			sh a1, 0(t0)
+			li a0, 0
+			j final
+
+		set_engine_torque_dir:
+			li t0, 0xFFFF0018
+			sh a1, 0(t0)
+			li a0, 0
+			j final
 
 	######### SERVO_ANGLES #########
 	set_servo_angles:
-	beq zero, a0, set_servo_angle_base
-	li t0, 1
-	beq t0, a0, set_servo_angle_mid
-	li t0, 2
-	beq t0, a0, set_servo_angle_top
-	li a0, -2
-	j final
-
-    set_servo_angle_top:
-		li t0, 156
-		blt a1, zero, servo_motor_ang_invalido
-		bgt a1, t0, servo_motor_ang_invalido
-		li t0, 0xFFFF001C
-		sb a1, 0(t0)
-		li a0, 0
+		beq zero, a0, set_servo_angle_base
+		li t0, 1
+		beq t0, a0, set_servo_angle_mid
+		li t0, 2
+		beq t0, a0, set_servo_angle_top
+		li a0, -2
 		j final
 
-    set_servo_angle_mid:
-		li t0, 52
-		li t1, 90
-		blt a1, t0, servo_motor_ang_invalido
-		bgt a1, t1, servo_motor_ang_invalido
-		li t0, 0xFFFF001D
-		sb a1, 0(t0)
-		li a0, 0
-		j final
+		set_servo_angle_top:
+			li t0, 156
+			blt a1, zero, servo_motor_ang_invalido
+			bgt a1, t0, servo_motor_ang_invalido
+			li t0, 0xFFFF001C
+			sb a1, 0(t0)
+			li a0, 0
+			j final
 
-    set_servo_angle_base:
-		li t0, 16
-		li t1, 116
-		blt a1, t0, servo_motor_ang_invalido
-		bgt a1, t1, servo_motor_ang_invalido
-		li t0, 0xFFFF001E
-		sb a1, 0(t0)
-		li a0, 0
-		j final
+		set_servo_angle_mid:
+			li t0, 52
+			li t1, 90
+			blt a1, t0, servo_motor_ang_invalido
+			bgt a1, t1, servo_motor_ang_invalido
+			li t0, 0xFFFF001D
+			sb a1, 0(t0)
+			li a0, 0
+			j final
+
+		set_servo_angle_base:
+			li t0, 16
+			li t1, 116
+			blt a1, t0, servo_motor_ang_invalido
+			bgt a1, t1, servo_motor_ang_invalido
+			li t0, 0xFFFF001E
+			sb a1, 0(t0)
+			li a0, 0
+			j final
 
 	servo_motor_ang_invalido:
 		li a0, -1
@@ -206,6 +210,12 @@ int_handler:
 		addi a0, t0, 0
 		j final
 
+	######### SET_TIME #########
+	set_times:
+		la t0, system_time
+		sw a0, 0(t0)
+		j final
+
 	######### WRITE #########
 	write:
 		li a0, 0
@@ -268,12 +278,12 @@ _start:
 	# Ajustes iniciais
 	la t0, system_time
 	sw zero, 0(t0)
-	##################################        DA ERRO      ##################################################
+
 	#configura GPT
 	li t3, 100
 	li t4, 0xFFFF0100
 	sw t3, 0(t4)
-	##################################        DA ERRO      ##################################################
+
 	#configura torque pra zero
 	li t0, 0xFFFF001A
 	sh zero, 0(t0)

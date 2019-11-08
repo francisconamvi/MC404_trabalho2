@@ -38,10 +38,15 @@ int main(){
     char pos[10000];
     set_torque(20,20);
     //set_torque(-5,-5);
+    set_time(10);
     while(get_us_distance() > 600){
-        tostring(pos, get_us_distance());
+        tostring(pos, get_time());
         puts(pos);
     }
+    // while(get_us_distance() > 600){
+    //     tostring(pos, get_us_distance());
+    //     puts(pos);
+    // }
     set_head_servo(0, 115);
     set_head_servo(1, 90);
     
