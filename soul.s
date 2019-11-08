@@ -206,8 +206,7 @@ int_handler:
 	######### GET_TIME #########
 	get_times:
 		la t0, system_time
-		lw t0, 0(t0)
-		addi a0, t0, 0
+		lw a0, 0(t0)
 		j final
 
 	######### SET_TIME #########
@@ -240,34 +239,34 @@ int_handler:
 		j write
 
 	final:
-	csrr t0, mepc  # carrega endereço de retorno (endereço da instrução que invocou a syscall)
-	addi t0, t0, 4 # soma 4 no endereço de retorno (para retornar após a ecall) 
-	csrw mepc, t0  # armazena endereço de retorno de volta no mepc
+		csrr t0, mepc  # carrega endereço de retorno (endereço da instrução que invocou a syscall)
+		addi t0, t0, 4 # soma 4 no endereço de retorno (para retornar após a ecall) 
+		csrw mepc, t0  # armazena endereço de retorno de volta no mepc
 
 	final_gpt:
-	lw s11, 84(t6)
-	lw s10, 80(t6)
-	lw s9, 76(t6)
-	lw s8, 72(t6)
-	lw s7, 68(t6)
-	lw s6, 64(t6)
-	lw s5, 60(t6)
-	lw s4, 56(t6)
-	lw s3, 52(t6)
-	lw s2, 48(t6)
-	lw s1, 44(t6)
-	lw ra, 40(t6)
-	lw t5, 36(t6) # salva t0
-	lw t4, 32(t6) # salva t0
-	lw t3, 28(t6) # salva t0
-	lw t2, 24(t6) # salva t0
-	lw t1, 20(t6) # salva t0
-	lw t0, 16(t6) # salva t0
-    lw a4, 12(t6)
-	lw a3, 8(t6)
-	lw a2, 4(t6)
-	lw a1, 0(t6)
-	csrrw t6, mscratch, t6 # troca valor de t6 com mscratch
+		lw s11, 84(t6)
+		lw s10, 80(t6)
+		lw s9, 76(t6)
+		lw s8, 72(t6)
+		lw s7, 68(t6)
+		lw s6, 64(t6)
+		lw s5, 60(t6)
+		lw s4, 56(t6)
+		lw s3, 52(t6)
+		lw s2, 48(t6)
+		lw s1, 44(t6)
+		lw ra, 40(t6)
+		lw t5, 36(t6) # salva t0
+		lw t4, 32(t6) # salva t0
+		lw t3, 28(t6) # salva t0
+		lw t2, 24(t6) # salva t0
+		lw t1, 20(t6) # salva t0
+		lw t0, 16(t6) # salva t0
+		lw a4, 12(t6)
+		lw a3, 8(t6)
+		lw a2, 4(t6)
+		lw a1, 0(t6)
+		csrrw t6, mscratch, t6 # troca valor de t6 com mscratch
 
 	mret           # Recuperar o restante do contexto (pc <- mepc)
 
