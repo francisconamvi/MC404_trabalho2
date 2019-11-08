@@ -67,7 +67,7 @@ int_handler:
 
 		li t3, 100
 		li t4, 0xFFFF0100
-		sw zero, 0(t4)
+		sw t3, 0(t4)
 		j final_gpt
 
 	######### ENGINE_TORQUE #########
@@ -272,7 +272,7 @@ _start:
 	#configura GPT
 	li t3, 100
 	li t4, 0xFFFF0100
-	sw zero, 0(t4)
+	sw t3, 0(t4)
 	##################################        DA ERRO      ##################################################
 	#configura torque pra zero
 	li t0, 0xFFFF001A
