@@ -52,9 +52,9 @@ void set_angle(int x){
             get_gyro_angles(angulo);
             dif = angulo->y - x;
         }
-        set_torque(15,-15);
-        delay(100);
+        //set_torque(15,-15);
         set_torque(0,0);
+        delay(100);
     }
     else{
         set_torque(15,-15);
@@ -62,9 +62,9 @@ void set_angle(int x){
             get_gyro_angles(angulo);
             dif = angulo->y - x;
         }
-        set_torque(-15,15);
-        delay(100);
+        //set_torque(-15,15);
         set_torque(0,0);
+        delay(100);
     }
 }
 
@@ -109,9 +109,9 @@ int main(){
                 set_angle(270);
             }
             set_torque(10,10);
-            delay(1000);
+            delay(2000);
             //verifica coisas
-            set_torque(0,0);
+            //set_torque(0,0);
 
             //se tem objeto na frente
             
@@ -128,9 +128,9 @@ int main(){
                 set_angle(0);
             }
             set_torque(10,10);
-            delay(1000);
+            delay(2000);
             //verifica coisas
-            set_torque(0,0);
+            //set_torque(0,0);
 
             //se tem objeto na frente
             
