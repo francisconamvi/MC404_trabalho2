@@ -11,6 +11,45 @@ O terreno poderá conter obstáculos, além de montanhas muito íngremes. Estes 
 */
 #include "api_robot2.h"
 
+int encontrarDistancia(Vector3* vetor1, Vector3* vetor2){
+    int x, y, distancia, k;
+    int i;
+
+    x = vetor1->x - vetor2->x;
+    y = vetor1->y - vetor2->y;
+    x = x * x;
+    y = y * y;
+    k = x + y;
+    //Calcular raiz de dois
+    distancia = k/2;
+    for(i = 0; i < 10; i++){
+        distancia = (distancia + (k/distancia))/2;
+    }
+
+    return distancia;
+}
+
+void set_angle(int x){
+    //if rot atual for maior que rot obj gira pra esquerda
+    //se nao gira pra direita
+    Vector3 *angulo;
+    get_gyro_angles(angulo);
+    if(angulo->y > x){
+        set_torque(-5,5);
+        while(angulo->y > x){
+            get_gyro_angles(angulo);
+        }
+        set_torque(0,0);
+    }
+    else{
+        set_torque(5,-5);
+        while(angulo->y < x){
+            get_gyro_angles(angulo);
+        }
+        set_torque(0,0);
+    }
+}
+
 void tostring(char str[], int num)
 {
     int i, rem, len = 0, n;
@@ -31,6 +70,7 @@ void tostring(char str[], int num)
     str[len + 1] = '\0';
 }
 
+//  Posição inicial do uóli: (734, 105, -75)
 
 int main(){
     int n;
