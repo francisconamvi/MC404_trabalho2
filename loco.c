@@ -11,7 +11,16 @@ O terreno poderá conter obstáculos, além de montanhas muito íngremes. Estes 
 */
 #include "api_robot2.h"
 
-int encontrarDistancia(Vector3* vetor1, Vector3* vetor2){
+void delay(int t){
+    int t0 = get_time();
+    int nt = get_time();
+    while(nt-t0 < t){
+        nt = get_time();
+    }
+    return;
+}
+
+int distancia(Vector3* vetor1, Vector3* vetor2){
     int x, y, distancia, k;
     int i;
 
