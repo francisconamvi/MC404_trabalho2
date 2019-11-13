@@ -11,18 +11,45 @@ O terreno poderá conter obstáculos, além de montanhas muito íngremes. Estes 
 */
 #include "api_robot2.h"
 
+
+void tostring(char str[], int num)
+{
+    int i, rem, len = 0, n;
+ 
+    n = num;
+    while (n != 0)
+    {
+        len++;
+        n /= 10;
+    }
+    for (i = 0; i < len; i++)
+    {
+        rem = num % 10;
+        num = num / 10;
+        str[len - (i + 1)] = rem + '0';
+    }
+    str[len] = '\n';
+    str[len + 1] = '\0';
+}
+
+
 void delay(int t){
     int t0 = get_time();
     int nt = get_time();
     Vector3* angle;
-
     while(nt-t0 < t){
         get_gyro_angles(angle);
         //se ta inclinado
         if(angle->x > 10 && angle->x < 350){
+            set_torque(0, 0);
             return;
-        }            
+        }
         //se tem objeto na frente 
+        if(get_us_distance() <= 750){
+            set_torque(0, 0);
+            return;
+        }
+        
         //se ta perto da area perigosa
     
         nt = get_time();
@@ -80,25 +107,6 @@ void set_angle(int x){
     }
 }
 
-void tostring(char str[], int num)
-{
-    int i, rem, len = 0, n;
- 
-    n = num;
-    while (n != 0)
-    {
-        len++;
-        n /= 10;
-    }
-    for (i = 0; i < len; i++)
-    {
-        rem = num % 10;
-        num = num / 10;
-        str[len - (i + 1)] = rem + '0';
-    }
-    str[len] = '\n';
-    str[len + 1] = '\0';
-}
 
 int main(){
     /*Posição inicial do uóli: (734, 105, -75);*/
