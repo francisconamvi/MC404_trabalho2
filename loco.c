@@ -33,30 +33,6 @@ void tostring(char str[], int num)
 }
 
 
-void delay(int t){
-    int t0 = get_time();
-    int nt = get_time();
-    Vector3* angle;
-    while(nt-t0 < t){
-        get_gyro_angles(angle);
-        //se ta inclinado
-        if(angle->x > 10 && angle->x < 350){
-            set_torque(0, 0);
-            return;
-        }
-        //se tem objeto na frente 
-        if(get_us_distance() <= 750){
-            set_torque(0, 0);
-            return;
-        }
-        
-        //se ta perto da area perigosa
-    
-        nt = get_time();
-    }
-    return;
-}
-
 int distancia(Vector3* vetor1, Vector3* vetor2){
     int x, y, distancia, k;
     int i;
@@ -74,6 +50,48 @@ int distancia(Vector3* vetor1, Vector3* vetor2){
 
     return distancia;
 }
+
+void delay(int t){
+    int t0 = get_time();
+    int nt = get_time();
+    Vector3* angle;
+    char angulo[30];
+    while(nt-t0 < t){
+        get_gyro_angles(angle);
+        tostring(angulo, angle->z);
+        puts(angulo);
+        //se ta inclinado
+        if(angle->x > 10 && angle->x < 350){
+            set_torque(-5,-5);
+            delay(100);
+            set_torque(0, 0);
+            return;
+        }
+        //se tem objeto na frente 
+        if(get_us_distance() <= 750){
+            set_torque(-5,-5);
+            delay(100);
+            set_torque(0, 0);
+            return;
+        }
+        
+        //se ta perto da area perigosa
+        for(int i = 0; i<(sizeof(dangerous_locations)/sizeof(friends_locations[0])); i++){
+            get_current_GPS_position(angle);
+            if(distancia(angle, &dangerous_locations[i]) <= 12){
+                set_torque(-5,-5);
+                delay(100);
+                set_torque(0, 0);
+                return;
+            }
+        }
+
+
+        nt = get_time();
+    }
+    return;
+}
+
 
 void set_angle(int x){
     //if rot atual for maior que rot obj gira pra esquerda
