@@ -14,7 +14,17 @@ O terreno poderá conter obstáculos, além de montanhas muito íngremes. Estes 
 void delay(int t){
     int t0 = get_time();
     int nt = get_time();
+    Vector3* angle;
+
     while(nt-t0 < t){
+        get_gyro_angles(angle);
+        //se ta inclinado
+        if(angle->x > 10 && angle->x < 350){
+            return;
+        }            
+        //se tem objeto na frente 
+        //se ta perto da area perigosa
+    
         nt = get_time();
     }
     return;
@@ -47,22 +57,24 @@ void set_angle(int x){
 
     if((dif < 0 && dif < -180) || (dif > 0 && dif < 180)){
 
-        set_torque(-15,15);
+        set_torque(-10,10);
         while((dif < 0 && dif < -180) || (dif > 0 && dif < 180)){
             get_gyro_angles(angulo);
             dif = angulo->y - x;
         }
-        //set_torque(15,-15);
+        set_torque(10,-10);
+        delay(100);
         set_torque(0,0);
         delay(100);
     }
     else{
-        set_torque(15,-15);
+        set_torque(10,-10);
         while(!((dif < 0 && dif < -180) || (dif > 0 && dif < 180))){
             get_gyro_angles(angulo);
             dif = angulo->y - x;
         }
-        //set_torque(-15,15);
+        set_torque(-10,10);
+        delay(100);
         set_torque(0,0);
         delay(100);
     }
@@ -91,8 +103,8 @@ void tostring(char str[], int num)
 int main(){
     /*Posição inicial do uóli: (734, 105, -75);*/
     
-    delay(500);
-    for(int i=0; i<(sizeof(friends_locations)/sizeof(friends_locations[0])); i++){
+    delay(500);    
+    for(int i = 0; i<(sizeof(friends_locations)/sizeof(friends_locations[0])); i++){
         Vector3* pos;
         Vector3 amigo;
         get_current_GPS_position(pos);
@@ -107,37 +119,33 @@ int main(){
             else{
                 puts("virou 270\n");
                 set_angle(270);
+                deltaX = -deltaX;
             }
             set_torque(10,10);
-            delay(2000);
-            //verifica coisas
-            //set_torque(0,0);
-
-            //se tem objeto na frente
-            
-            //se ta perto da area perigosa
+            delay(deltaX*100);
 
             get_current_GPS_position(pos);
             int deltaZ = amigo.z - pos->z;
             if(deltaZ<0){
                 puts("virou 180\n");
                 set_angle(180);
+                deltaZ = -deltaZ;
             }
             else{
                 puts("virou 0\n");
                 set_angle(0);
             }
             set_torque(10,10);
-            delay(2000);
-            //verifica coisas
-            //set_torque(0,0);
-
-            //se tem objeto na frente
-            
-            //se ta perto da area perigosa
+            delay(deltaZ*100);
+            get_current_GPS_position(pos);
 
         }
+        puts("Encontrou amigo ");
+        char amigo_char[2] = {i+48,'\0'};
+        puts(amigo_char);
+        puts("\n");
     }
+    set_torque(0, 0);
 
     return 0;
 }
