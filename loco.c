@@ -17,6 +17,9 @@ void tostring(char str[], int num)
     int i, rem, len = 0, n;
  
     n = num;
+    if(n==0){
+        len++;
+    }
     while (n != 0)
     {
         len++;
@@ -51,37 +54,72 @@ int distancia(Vector3* vetor1, Vector3* vetor2){
     return distancia;
 }
 
+
+void delay_puro(int t){
+    int t0 = get_time();
+    int nt = get_time();
+    while(nt-t0 < t){
+        nt = get_time();
+    }
+    return;
+}
+
 void delay(int t){
     int t0 = get_time();
     int nt = get_time();
     Vector3* angle;
-    char angulo[30];
+    char angulo[5];
     while(nt-t0 < t){
         get_gyro_angles(angle);
-        tostring(angulo, angle->z);
-        puts(angulo);
         //se ta inclinado
-        if(angle->x > 10 && angle->x < 350){
+        if(angle->x > 10 && angle->x < 180){
+            puts("INCLINADO +\n");
             set_torque(-5,-5);
-            delay(100);
-            set_torque(0, 0);
+            while(angle->x > 10 && angle->x < 180){
+                delay_puro(100);
+                get_gyro_angles(angle);
+            }
+            set_torque(5,5);
+            delay_puro(200);
+            return;
+        }
+        if(angle->x > 180 && angle->x < 350){
+            puts("INCLINADO -\n");
+            set_torque(5,5);
+            while(angle->x > 180 && angle->x < 350){
+                delay_puro(100);
+                get_gyro_angles(angle);
+            }
+            set_torque(-5,-5);
+            delay_puro(200);
             return;
         }
         //se tem objeto na frente 
         if(get_us_distance() <= 750){
-            set_torque(-5,-5);
-            delay(100);
-            set_torque(0, 0);
+            puts("OBJETO A FRENTE\n");
+            set_torque(-15,-15);
+            while(get_us_distance() <= 750){
+                continue;
+            }
+            set_torque(5,5);
+            delay_puro(200);
             return;
         }
         
         //se ta perto da area perigosa
-        for(int i = 0; i<(sizeof(dangerous_locations)/sizeof(friends_locations[0])); i++){
+        for(int i = 0; i<(sizeof(dangerous_locations)/sizeof(dangerous_locations[0])); i++){
             get_current_GPS_position(angle);
-            if(distancia(angle, &dangerous_locations[i]) <= 12){
+            if(distancia(angle, &dangerous_locations[i]) < 9){
+                puts("INIMIGO PERTO\n");
                 set_torque(-5,-5);
-                delay(100);
+                while(distancia(angle, &dangerous_locations[i]) < 9){
+                    delay_puro(100);
+                    get_current_GPS_position(angle);
+                }
+                set_torque(5, 5);
+                delay_puro(200);
                 set_torque(0, 0);
+                delay_puro(200);
                 return;
             }
         }
@@ -128,8 +166,9 @@ void set_angle(int x){
 
 int main(){
     /*Posição inicial do uóli: (734, 105, -75);*/
-    
-    delay(500);    
+    delay_puro(500); 
+    set_torque(-10, -10);
+    delay_puro(1000);
     for(int i = 0; i<(sizeof(friends_locations)/sizeof(friends_locations[0])); i++){
         Vector3* pos;
         Vector3 amigo;
@@ -149,6 +188,15 @@ int main(){
             }
             set_torque(10,10);
             delay(deltaX*100);
+
+            get_current_GPS_position(pos);            
+            if(distancia(pos, &amigo) < 5){
+                set_torque(-10,10);
+                delay_puro(500);
+                set_torque(0,0);
+                delay_puro(200);
+                break;
+            }
 
             get_current_GPS_position(pos);
             int deltaZ = amigo.z - pos->z;
