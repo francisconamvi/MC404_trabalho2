@@ -10,7 +10,8 @@ Note que o Uóli não consegue subir montanhas muito íngremes. Você deve ident
 O terreno poderá conter obstáculos, além de montanhas muito íngremes. Estes obstáculos devem ser desviados, pois a colisão com estes pode afetar a trajetória ou mesmo o funcionamento do Uóli.
 */
 #include "api_robot2.h"
-
+int estado;
+void delay(int t);
 
 void tostring(char str[], int num)
 {
@@ -37,14 +38,14 @@ void tostring(char str[], int num)
 
 
 int distancia(Vector3* vetor1, Vector3* vetor2){
-    int x, y, distancia, k;
+    int x, z, distancia, k;
     int i;
 
     x = vetor1->x - vetor2->x;
-    y = vetor1->y - vetor2->y;
+    z = vetor1->z - vetor2->z;
     x = x * x;
-    y = y * y;
-    k = x + y;
+    z = z * z;
+    k = x + z;
     //Calcular raiz de dois
     distancia = k/2;
     for(i = 0; i < 10; i++){
@@ -62,6 +63,38 @@ void delay_puro(int t){
         nt = get_time();
     }
     return;
+}
+
+
+void set_angle(int x){
+    //if rot atual for maior que rot obj gira pra esquerda
+    //se nao gira pra direita
+    Vector3 *angulo;
+    get_gyro_angles(angulo);
+    int dif = angulo->y - x;
+    if((dif < 0 && dif < -180) || (dif > 0 && dif < 180)){
+
+        set_torque(-10,10);
+        while((dif < 0 && dif < -180) || (dif > 0 && dif < 180)){
+            get_gyro_angles(angulo);
+            dif = angulo->y - x;
+        }
+        set_torque(10,-10);
+        delay(100);
+        set_torque(0,0);
+        delay(100);
+    }
+    else{
+        set_torque(10,-10);
+        while(!((dif < 0 && dif < -180) || (dif > 0 && dif < 180))){
+            get_gyro_angles(angulo);
+            dif = angulo->y - x;
+        }
+        set_torque(-10,10);
+        delay(100);
+        set_torque(0,0);
+        delay(100);
+    }
 }
 
 void delay(int t){
@@ -109,17 +142,126 @@ void delay(int t){
         //se ta perto da area perigosa
         for(int i = 0; i<(sizeof(dangerous_locations)/sizeof(dangerous_locations[0])); i++){
             get_current_GPS_position(angle);
-            if(distancia(angle, &dangerous_locations[i]) < 9){
+            if(distancia(angle, &dangerous_locations[i]) < 12){
                 puts("INIMIGO PERTO\n");
-                set_torque(-5,-5);
-                while(distancia(angle, &dangerous_locations[i]) < 9){
-                    delay_puro(100);
-                    get_current_GPS_position(angle);
+                // set_torque(-5,-5);
+                // delay_puro(100);
+                int deltaX = dangerous_locations[i].x - angle->x;
+                int movimento;
+                int deltaZ = dangerous_locations[i].z - angle->z;
+                if(deltaX < 0 && estado == 270){
+                    if(deltaZ < 0){
+                        char amigo_char[3];
+                        tostring(amigo_char, angle->x);
+                        puts(amigo_char);
+                        tostring(amigo_char, angle->z);
+                        puts(amigo_char);
+                        puts("\n");
+                        puts("virou 315 1\n");
+                        set_angle(315);                     
+                        set_torque(10, 10);
+                        delay_puro(2000);
+                        break;
+                    }
+                    else{
+                        char amigo_char[3];
+                        tostring(amigo_char, angle->x);
+                        puts(amigo_char);
+                        tostring(amigo_char, angle->z);
+                        puts(amigo_char);
+                        puts("\n");
+                        puts("virou 225 1\n");                        
+                        set_angle(225);
+                        set_torque(10, 10);
+                        delay_puro(2000);
+                        break;
+                    }
                 }
-                set_torque(5, 5);
-                delay_puro(200);
-                set_torque(0, 0);
-                delay_puro(200);
+                else if(deltaX > 0 && estado == 90){
+                    if(deltaZ > 0){
+                        char amigo_char[3];
+                        tostring(amigo_char, angle->x);
+                        puts(amigo_char);
+                        tostring(amigo_char, angle->z);
+                        puts(amigo_char);
+                        puts("\n");
+                        puts("virou 135 1\n");
+                        set_angle(135);    
+                        set_torque(10, 10);
+                        delay_puro(2000);
+                        break;
+                    }
+                    else{
+                        char amigo_char[3];
+                        tostring(amigo_char, angle->x);
+                        puts(amigo_char);
+                        tostring(amigo_char, angle->z);
+                        puts(amigo_char);
+                        puts("\n");
+                        puts("virou 45 1\n");                        
+                        set_angle(45);
+                        set_torque(10, 10);
+                        delay_puro(2000);
+                        break;
+                    }
+                }
+                else if(deltaZ > 0 && estado == 0){
+                    if(deltaX > 0){
+                        char amigo_char[3];
+                        tostring(amigo_char, angle->x);
+                        puts(amigo_char);
+                        tostring(amigo_char, angle->z);
+                        puts(amigo_char);
+                        puts("\n");
+                        puts("virou 315 1\n");
+                        set_angle(315);    
+                        set_torque(10, 10);
+                        delay_puro(2000);
+                        break;
+                    }
+                    else{
+                        char amigo_char[3];
+                        tostring(amigo_char, angle->x);
+                        puts(amigo_char);
+                        tostring(amigo_char, angle->z);
+                        puts(amigo_char);
+                        puts("\n");
+                        puts("virou 45 1\n");                        
+                        set_angle(45);
+                        set_torque(10, 10);
+                        delay_puro(2000);
+                        break;
+                    }
+                }
+                else if(deltaZ < 0 && estado == 180){
+                    if(deltaX < 0){
+                        char amigo_char[3];
+                        tostring(amigo_char, angle->x);
+                        puts(amigo_char);
+                        tostring(amigo_char, angle->z);
+                        puts(amigo_char);
+                        puts("\n");
+                        puts("virou 135 1\n");
+                        set_angle(135);    
+                        set_torque(10, 10);
+                        delay_puro(2000);
+                        break;
+                    }
+                    else{
+                        char amigo_char[3];
+                        tostring(amigo_char, angle->x);
+                        puts(amigo_char);
+                        tostring(amigo_char, angle->z);
+                        puts(amigo_char);
+                        puts("\n");
+                        puts("virou 225 1\n");                        
+                        set_angle(225);
+                        set_torque(10, 10);
+                        delay_puro(2000);
+                        break;
+                    }
+                }
+                puts("pao");
                 return;
             }
         }
@@ -131,37 +273,6 @@ void delay(int t){
 }
 
 
-void set_angle(int x){
-    //if rot atual for maior que rot obj gira pra esquerda
-    //se nao gira pra direita
-    Vector3 *angulo;
-    get_gyro_angles(angulo);
-    int dif = angulo->y - x;
-
-    if((dif < 0 && dif < -180) || (dif > 0 && dif < 180)){
-
-        set_torque(-10,10);
-        while((dif < 0 && dif < -180) || (dif > 0 && dif < 180)){
-            get_gyro_angles(angulo);
-            dif = angulo->y - x;
-        }
-        set_torque(10,-10);
-        delay(100);
-        set_torque(0,0);
-        delay(100);
-    }
-    else{
-        set_torque(10,-10);
-        while(!((dif < 0 && dif < -180) || (dif > 0 && dif < 180))){
-            get_gyro_angles(angulo);
-            dif = angulo->y - x;
-        }
-        set_torque(-10,10);
-        delay(100);
-        set_torque(0,0);
-        delay(100);
-    }
-}
 
 
 int main(){
@@ -180,21 +291,23 @@ int main(){
             if(deltaX>0){
                 puts("virou 90\n");
                 set_angle(90);
+                estado = 90;
             }
             else{
                 puts("virou 270\n");
                 set_angle(270);
                 deltaX = -deltaX;
+                estado = 270;
             }
             set_torque(10,10);
-            delay(deltaX*100);
+            delay(deltaX*160);
 
             get_current_GPS_position(pos);            
             if(distancia(pos, &amigo) < 5){
                 set_torque(-10,10);
-                delay_puro(500);
+                delay(500);
                 set_torque(0,0);
-                delay_puro(200);
+                delay(200);
                 break;
             }
 
@@ -204,13 +317,15 @@ int main(){
                 puts("virou 180\n");
                 set_angle(180);
                 deltaZ = -deltaZ;
+                estado = 180;
             }
             else{
                 puts("virou 0\n");
                 set_angle(0);
+                estado = 0;
             }
             set_torque(10,10);
-            delay(deltaZ*100);
+            delay(deltaZ*160);
             get_current_GPS_position(pos);
 
         }
