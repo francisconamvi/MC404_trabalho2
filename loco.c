@@ -144,120 +144,80 @@ void delay(int t){
             get_current_GPS_position(angle);
             if(distancia(angle, &dangerous_locations[i]) < 12){
                 puts("INIMIGO PERTO\n");
-                // set_torque(-5,-5);
-                // delay_puro(100);
+                set_torque(-10,-10);
+                delay_puro(100);
                 int deltaX = dangerous_locations[i].x - angle->x;
                 int movimento;
                 int deltaZ = dangerous_locations[i].z - angle->z;
                 if(deltaX < 0 && estado == 270){
                     if(deltaZ < 0){
-                        char amigo_char[3];
-                        tostring(amigo_char, angle->x);
-                        puts(amigo_char);
-                        tostring(amigo_char, angle->z);
-                        puts(amigo_char);
                         puts("\n");
                         puts("virou 315 1\n");
                         set_angle(315);                     
                         set_torque(10, 10);
-                        delay_puro(2000);
+                        delay_puro(1000);
                         break;
                     }
                     else{
-                        char amigo_char[3];
-                        tostring(amigo_char, angle->x);
-                        puts(amigo_char);
-                        tostring(amigo_char, angle->z);
-                        puts(amigo_char);
                         puts("\n");
                         puts("virou 225 1\n");                        
                         set_angle(225);
                         set_torque(10, 10);
-                        delay_puro(2000);
+                        delay_puro(1000);
                         break;
                     }
                 }
                 else if(deltaX > 0 && estado == 90){
                     if(deltaZ > 0){
-                        char amigo_char[3];
-                        tostring(amigo_char, angle->x);
-                        puts(amigo_char);
-                        tostring(amigo_char, angle->z);
-                        puts(amigo_char);
                         puts("\n");
                         puts("virou 135 1\n");
                         set_angle(135);    
                         set_torque(10, 10);
-                        delay_puro(2000);
+                        delay_puro(1000);
                         break;
                     }
                     else{
-                        char amigo_char[3];
-                        tostring(amigo_char, angle->x);
-                        puts(amigo_char);
-                        tostring(amigo_char, angle->z);
-                        puts(amigo_char);
                         puts("\n");
                         puts("virou 45 1\n");                        
                         set_angle(45);
                         set_torque(10, 10);
-                        delay_puro(2000);
+                        delay_puro(1000);
                         break;
                     }
                 }
                 else if(deltaZ > 0 && estado == 0){
                     if(deltaX > 0){
-                        char amigo_char[3];
-                        tostring(amigo_char, angle->x);
-                        puts(amigo_char);
-                        tostring(amigo_char, angle->z);
-                        puts(amigo_char);
                         puts("\n");
                         puts("virou 315 1\n");
                         set_angle(315);    
                         set_torque(10, 10);
-                        delay_puro(2000);
+                        delay_puro(1000);
                         break;
                     }
                     else{
-                        char amigo_char[3];
-                        tostring(amigo_char, angle->x);
-                        puts(amigo_char);
-                        tostring(amigo_char, angle->z);
-                        puts(amigo_char);
                         puts("\n");
                         puts("virou 45 1\n");                        
                         set_angle(45);
                         set_torque(10, 10);
-                        delay_puro(2000);
+                        delay_puro(1000);
                         break;
                     }
                 }
                 else if(deltaZ < 0 && estado == 180){
                     if(deltaX < 0){
-                        char amigo_char[3];
-                        tostring(amigo_char, angle->x);
-                        puts(amigo_char);
-                        tostring(amigo_char, angle->z);
-                        puts(amigo_char);
                         puts("\n");
                         puts("virou 135 1\n");
                         set_angle(135);    
                         set_torque(10, 10);
-                        delay_puro(2000);
+                        delay_puro(1000);
                         break;
                     }
                     else{
-                        char amigo_char[3];
-                        tostring(amigo_char, angle->x);
-                        puts(amigo_char);
-                        tostring(amigo_char, angle->z);
-                        puts(amigo_char);
                         puts("\n");
                         puts("virou 225 1\n");                        
                         set_angle(225);
                         set_torque(10, 10);
-                        delay_puro(2000);
+                        delay_puro(1000);
                         break;
                     }
                 }
