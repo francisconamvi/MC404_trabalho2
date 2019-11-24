@@ -11,6 +11,7 @@ O terreno poderá conter obstáculos, além de montanhas muito íngremes. Estes 
 */
 #include "api_robot2.h"
 int estado;
+Vector3 amigo;
 void delay(int t);
 
 void tostring(char str[], int num)
@@ -103,10 +104,21 @@ void delay(int t){
     Vector3* angle;
     char angulo[5];
     while(nt-t0 < t){
+        get_current_GPS_position(angle);
+        if(distancia(angle, &amigo) < 5){
+            puts("delay AAA\n");
+            set_torque(-10,10);
+            delay_puro(500);
+            set_torque(0,0);
+            delay_puro(200);
+            return;
+        }
+
         get_gyro_angles(angle);
         //se ta inclinado
         if(angle->x > 10 && angle->x < 180){
             puts("INCLINADO +\n");
+            /*
             set_torque(-5,-5);
             while(angle->x > 10 && angle->x < 180){
                 delay_puro(100);
@@ -114,10 +126,12 @@ void delay(int t){
             }
             set_torque(5,5);
             delay_puro(200);
+            */
             return;
         }
         if(angle->x > 180 && angle->x < 350){
             puts("INCLINADO -\n");
+            /*
             set_torque(5,5);
             while(angle->x > 180 && angle->x < 350){
                 delay_puro(100);
@@ -125,17 +139,25 @@ void delay(int t){
             }
             set_torque(-5,-5);
             delay_puro(200);
+            */
             return;
         }
         //se tem objeto na frente 
         if(get_us_distance() <= 750){
-            puts("OBJETO A FRENTE\n");
+            set_torque(-50,-50);
+            puts("OaF\n");
+            delay_puro(200);
+            set_torque(10,10);
+            delay_puro(100);
             set_torque(-15,-15);
             while(get_us_distance() <= 750){
                 continue;
             }
-            set_torque(5,5);
+            set_torque(15,15);
             delay_puro(200);
+            set_torque(0,0);
+            delay_puro(100);
+            puts("D-R\n");
             return;
         }
         
@@ -143,90 +165,86 @@ void delay(int t){
         for(int i = 0; i<(sizeof(dangerous_locations)/sizeof(dangerous_locations[0])); i++){
             get_current_GPS_position(angle);
             if(distancia(angle, &dangerous_locations[i]) < 12){
-                puts("INIMIGO PERTO\n");
-                set_torque(-10,-10);
+                set_torque(-15,-15);
+                puts("I-P\n");
+                delay_puro(200);
+                set_torque(5,5);
                 delay_puro(100);
                 int deltaX = dangerous_locations[i].x - angle->x;
                 int movimento;
                 int deltaZ = dangerous_locations[i].z - angle->z;
                 if(deltaX < 0 && estado == 270){
                     if(deltaZ < 0){
-                        puts("\n");
-                        puts("virou 315 1\n");
+                        puts("v 315\n");
                         set_angle(315);                     
                         set_torque(10, 10);
-                        delay_puro(1000);
-                        break;
+                        delay_puro(2000);
+                        //break;
                     }
                     else{
-                        puts("\n");
-                        puts("virou 225 1\n");                        
+                        puts("v 225\n");                        
                         set_angle(225);
                         set_torque(10, 10);
-                        delay_puro(1000);
-                        break;
+                        delay_puro(2000);
+                        //break;
                     }
+                    return;
                 }
                 else if(deltaX > 0 && estado == 90){
                     if(deltaZ > 0){
-                        puts("\n");
-                        puts("virou 135 1\n");
+                        puts("v 135\n");
                         set_angle(135);    
                         set_torque(10, 10);
-                        delay_puro(1000);
-                        break;
+                        delay_puro(2000);
+                        //break;
                     }
                     else{
-                        puts("\n");
-                        puts("virou 45 1\n");                        
+                        puts("v 45\n");                        
                         set_angle(45);
                         set_torque(10, 10);
-                        delay_puro(1000);
-                        break;
+                        delay_puro(2000);
+                        //break;
                     }
+                    return;
                 }
                 else if(deltaZ > 0 && estado == 0){
                     if(deltaX > 0){
-                        puts("\n");
-                        puts("virou 315 1\n");
+                        puts("v 315\n");
                         set_angle(315);    
                         set_torque(10, 10);
-                        delay_puro(1000);
-                        break;
+                        delay_puro(2000);
+                        //break;
                     }
                     else{
-                        puts("\n");
-                        puts("virou 45 1\n");                        
+                        puts("v 45\n");                        
                         set_angle(45);
                         set_torque(10, 10);
-                        delay_puro(1000);
-                        break;
+                        delay_puro(2000);
+                        //break;
                     }
+                    return;
                 }
                 else if(deltaZ < 0 && estado == 180){
                     if(deltaX < 0){
-                        puts("\n");
-                        puts("virou 135 1\n");
+                        puts("v 135\n");
                         set_angle(135);    
                         set_torque(10, 10);
-                        delay_puro(1000);
-                        break;
+                        delay_puro(2000);
+                        //break;
                     }
                     else{
-                        puts("\n");
-                        puts("virou 225 1\n");                        
+                        puts("v 225\n");                        
                         set_angle(225);
                         set_torque(10, 10);
-                        delay_puro(1000);
-                        break;
+                        delay_puro(2000);
+                        //break;
                     }
+                    return;
                 }
-                puts("pao");
+                puts("pao\n");
                 return;
             }
         }
-
-
         nt = get_time();
     }
     return;
@@ -238,11 +256,12 @@ void delay(int t){
 int main(){
     /*Posição inicial do uóli: (734, 105, -75);*/
     delay_puro(500); 
+    set_head_servo(2,85);
+    delay_puro(100);
     set_torque(-10, -10);
-    delay_puro(1000);
+    delay_puro(1200);
     for(int i = 0; i<(sizeof(friends_locations)/sizeof(friends_locations[0])); i++){
         Vector3* pos;
-        Vector3 amigo;
         get_current_GPS_position(pos);
         amigo = friends_locations[i];
         while(distancia(pos, &amigo) > 5){
@@ -260,14 +279,15 @@ int main(){
                 estado = 270;
             }
             set_torque(10,10);
-            delay(deltaX*160);
+            delay(deltaX*120+100);
 
             get_current_GPS_position(pos);            
-            if(distancia(pos, &amigo) < 5){
+            if(distancia(pos, &amigo) <= 5){
                 set_torque(-10,10);
-                delay(500);
+                delay_puro(500);
                 set_torque(0,0);
-                delay(200);
+                delay_puro(200);
+                puts("AAA\n");
                 break;
             }
 
@@ -285,7 +305,7 @@ int main(){
                 estado = 0;
             }
             set_torque(10,10);
-            delay(deltaZ*160);
+            delay(deltaZ*120+100);
             get_current_GPS_position(pos);
 
         }
@@ -295,6 +315,6 @@ int main(){
         puts("\n");
     }
     set_torque(0, 0);
-
+    /*depois printar o tempo final pra ver quanto tempo ele gastou*/
     return 0;
 }
