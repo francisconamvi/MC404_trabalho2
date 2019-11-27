@@ -129,9 +129,10 @@ void delay(int t_d){
             set_torque(-70,-70);
             puts("OaF\n");
             delay_puro(400);
-            set_torque(70,70);
+            set_torque(40,40);
             delay_puro(300);
             set_torque(-15,-15);
+            delay_puro(1000);
             while(get_us_distance() <= 1000){
                 continue;
             }
@@ -153,9 +154,9 @@ void delay(int t_d){
                 if(deltaX < 0 && estado == 270){
                     set_torque(-80,-80);
                     puts("I-P\n");
-                    delay_puro(500);
-                    set_torque(60,60);
-                    delay_puro(300);
+                    delay_puro(1000);
+                    set_torque(30,30);
+                    delay_puro(400);
                     if(deltaZ < 0){
                         puts("v 315\n");
                         set_angle(315);                     
@@ -175,9 +176,9 @@ void delay(int t_d){
                 else if(deltaX > 0 && estado == 90){
                     set_torque(-80,-80);
                     puts("I-P\n");
-                    delay_puro(500);
-                    set_torque(60,60);
-                    delay_puro(300);
+                    delay_puro(1000);
+                    set_torque(30,30);
+                    delay_puro(400);
                     if(deltaZ > 0){
                         puts("v 135\n");
                         set_angle(135);    
@@ -197,9 +198,9 @@ void delay(int t_d){
                 else if(deltaZ > 0 && estado == 0){
                     set_torque(-80,-80);
                     puts("I-P\n");
-                    delay_puro(500);
-                    set_torque(60,60);
-                    delay_puro(300);
+                    delay_puro(1000);
+                    set_torque(30,30);
+                    delay_puro(400);
                     if(deltaX > 0){
                         puts("v 315\n");
                         set_angle(315);    
@@ -219,9 +220,9 @@ void delay(int t_d){
                 else if(deltaZ < 0 && estado == 180){
                     set_torque(-80,-80);
                     puts("I-P\n");
-                    delay_puro(500);
-                    set_torque(60,60);
-                    delay_puro(300);
+                    delay_puro(1000);
+                    set_torque(30,30);
+                    delay_puro(400);
                     if(deltaX < 0){
                         puts("v 135\n");
                         set_angle(135);    
