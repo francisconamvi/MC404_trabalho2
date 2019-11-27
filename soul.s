@@ -219,12 +219,10 @@ int_handler:
 	write:
 		li a0, 0
 		write_inicio:
+		bge a0, a2, final
 		#dar load byte na memoria
 		lb t0, 0(a1)
-		#verificar se é \0
-		beq zero, t0, final
-		addi a0, a0, 1
-		#se nao for, coloca no 0xFFFF0109
+		#coloca no 0xFFFF0109
 		li t1, 0xFFFF0109
 		sb t0, 0(t1)
 		#poe 1 no 0xFFFF0108
@@ -235,8 +233,9 @@ int_handler:
 		verifica_write:
 		lb t1, 0(t2)
 		bne zero, t1, verifica_write
+		addi a0, a0, 1
 		addi a1, a1, 1
-		j write
+		j write_inicio
 
 	final:
 		csrr t0, mepc  # carrega endereço de retorno (endereço da instrução que invocou a syscall)

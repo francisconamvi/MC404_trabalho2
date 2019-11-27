@@ -110,8 +110,21 @@ puts:
     #a0 tem o endereço do que será escrito
     mv a1, a0
     li a0, 1
-    li a2, 100
     li a7, 64
+    conta_char:
+		li a2, 0
+        mv t4, a1
+		conta_char_inicio:
+		#dar load byte na memoria
+		lb t0, 0(t4)
+		#verificar se é \0
+		beq zero, t0, fim_conta_char
+		addi a2, a2, 1
+        add t4, t4, 1
+		j conta_char_inicio
+    fim_conta_char:
+
+    #li a2, 100
     ecall
     ret
 
