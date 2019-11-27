@@ -133,12 +133,12 @@ void delay(int t_d){
             delay_puro(300);
             set_torque(-15,-15);
             delay_puro(1000);
-            while(get_us_distance() <= 1000){
+            while(get_us_distance() <= 900){
                 continue;
             }
-            set_torque(15,15);
-            delay_puro(200);
-            set_torque(0,0);
+            set_torque(50,50);
+            delay_puro(400);
+            set_torque(-10,-10);
             delay_puro(100);
             puts("D-R\n");
             return;
@@ -154,7 +154,7 @@ void delay(int t_d){
                 if(deltaX < 0 && estado == 270){
                     set_torque(-80,-80);
                     puts("I-P\n");
-                    delay_puro(1000);
+                    delay_puro(500);
                     set_torque(30,30);
                     delay_puro(400);
                     if(deltaZ < 0){
@@ -176,7 +176,7 @@ void delay(int t_d){
                 else if(deltaX > 0 && estado == 90){
                     set_torque(-80,-80);
                     puts("I-P\n");
-                    delay_puro(1000);
+                    delay_puro(500);
                     set_torque(30,30);
                     delay_puro(400);
                     if(deltaZ > 0){
@@ -198,7 +198,7 @@ void delay(int t_d){
                 else if(deltaZ > 0 && estado == 0){
                     set_torque(-80,-80);
                     puts("I-P\n");
-                    delay_puro(1000);
+                    delay_puro(500);
                     set_torque(30,30);
                     delay_puro(400);
                     if(deltaX > 0){
@@ -220,7 +220,7 @@ void delay(int t_d){
                 else if(deltaZ < 0 && estado == 180){
                     set_torque(-80,-80);
                     puts("I-P\n");
-                    delay_puro(1000);
+                    delay_puro(500);
                     set_torque(30,30);
                     delay_puro(400);
                     if(deltaX < 0){
@@ -240,7 +240,6 @@ void delay(int t_d){
                     return;
                 }
                 puts("pao\n");
-                return;
             }
         }
         nt_d = get_time();
@@ -281,7 +280,7 @@ int main(){
 
             get_current_GPS_position(pos);            
             if(distancia(pos, &amigo) <= 5){
-                set_torque(-50,50);
+                set_torque(-50,-50);
                 delay_puro(500);
                 set_torque(40,40);
                 delay_puro(200);
