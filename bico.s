@@ -1,4 +1,12 @@
-#O código da subcamada BiCo deve implementar as rotinas da API de Controle em linguagem de montagem do RISC-V. A API está descrita no arquivo "api_robot.h". Para controlar o hardware, o código deve realizar chamadas ao sistema, ou syscalls. As syscalls são definidas abaixo.
+#**************************************************************** 
+#* Description: Biblioteca de Controle (BiCo).
+#*
+#* Authors: Francisco Namias Vicente
+#*          Luiz Felipe Eike Kina
+#*
+#* Date: 2019
+#***************************************************************/
+
 .globl set_engine_torque
 set_engine_torque:
     #a0 é o parâmetro id do motor e a1 e o parametro torque do motor
@@ -62,6 +70,7 @@ set_torque:
 .globl set_head_servo
 set_head_servo:
     #a0 é o identificador do servo motor 0/1/2 = base/mid/top
+    addi a0, a0, 1
     #a1 é o angulo
     li a7, 17
     ecall

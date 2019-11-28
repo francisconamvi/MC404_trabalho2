@@ -1,19 +1,18 @@
-/*Lógica de Controle (LoCo)
-O código da subcamada LoCo deve ser implementado em linguagem C e deve fazer uso das rotinas disponíveis na API de Controle para enviar comandos para o robô.
+/**************************************************************** 
+ * Description: Lógica de Controle (LoCo).
+ *
+ * Authors: Francisco Namias Vicente
+ *          Luiz Felipe Eike Kina
+ *
+ * Date: 2019
+ ***************************************************************/
 
-Com base nas coordenadas dos amigos, armazenadas na variável "friends_locations", e das posições perigosas, armazenadas na variável "dangerous_locations" (veja o arquivo api_robot.h), a lógica de controle do programa deve:
-
-Movimentar o Uóli pelo terreno com o objetivo de encontrar e transmitir informações para os amigos e evitar as posições perigosas.
-O Uóli deve passar a pelo menos 5 metros do amigo para que a informação possa ser transferida.
-O Uóli deve se manter a pelo menos 10 metros de distância de posições perigosas para evitar problemas.
-Note que o Uóli não consegue subir montanhas muito íngremes. Você deve identificar estes casos e programá-lo para que ele contorne os obstáculos.
-O terreno poderá conter obstáculos, além de montanhas muito íngremes. Estes obstáculos devem ser desviados, pois a colisão com estes pode afetar a trajetória ou mesmo o funcionamento do Uóli.
-*/
 #include "api_robot.h"
+/*variaveis globais*/
 int estado;
 Vector3 amigo;
-void delay(int t);
 
+/*funcao para transformar int em string*/
 void tostring(char str[], int num)
 {
     int i, rem, len = 0, n;
@@ -37,7 +36,7 @@ void tostring(char str[], int num)
     str[len + 1] = '\0';
 }
 
-
+/*funcao para calcular a distancia entre duas coordenadas*/
 int distancia(Vector3* vetor1, Vector3* vetor2){
     int x, z, distancia, k;
     int i;
@@ -56,7 +55,7 @@ int distancia(Vector3* vetor1, Vector3* vetor2){
     return distancia;
 }
 
-
+/*delay puro, realmente apenas conta o tempo*/
 void delay_puro(int t){
     int t0 = get_time();
     int nt = get_time();
@@ -66,7 +65,7 @@ void delay_puro(int t){
     return;
 }
 
-
+/*vira para um angulo especifico*/
 void set_angle(int x){
     //if rot atual for maior que rot obj gira pra esquerda
     //se nao gira pra direita
@@ -98,15 +97,15 @@ void set_angle(int x){
     }
 }
 
+/*principal funcao, que alem de contar tempo, verifica situaçoes*/
 void delay(int t_d){
     int t0_d = get_time();
     int nt_d = get_time();
     Vector3* angle;
-    char angulo[5];
     while(nt_d-t0_d < t_d){
         get_current_GPS_position(angle);
+        /*verifica se ja esta perto do amigo*/
         if(distancia(angle, &amigo) < 5){
-            puts("d AAA\n");
             set_torque(-10,10);
             delay_puro(500);
             set_torque(0,0);
@@ -115,19 +114,17 @@ void delay(int t_d){
         }
 
         get_gyro_angles(angle);
-        //se ta inclinado
+        /*verifica se esta inclinado*/
         if(angle->x > 10 && angle->x < 180){
-            puts("INCLINADO +\n");
             return;
         }
         if(angle->x > 180 && angle->x < 350){
-            puts("INCLINADO -\n");
             return;
         }
-        //se tem objeto na frente 
+
+        /*verifica se tem um objeto a frente*/
         if(get_us_distance() <= 1000){
             set_torque(-70,-70);
-            puts("OaF\n");
             delay_puro(400);
             set_torque(40,40);
             delay_puro(300);
@@ -140,7 +137,6 @@ void delay(int t_d){
             delay_puro(400);
             set_torque(-10,-10);
             delay_puro(100);
-            puts("D-R\n");
             return;
         }
         
@@ -153,23 +149,18 @@ void delay(int t_d){
                 int deltaZ = dangerous_locations[i].z - angle->z;
                 if(deltaX < 0 && estado == 270){
                     set_torque(-80,-80);
-                    puts("I-P\n");
                     delay_puro(500);
                     set_torque(30,30);
                     delay_puro(400);
                     if(deltaZ < 0){
-                        puts("v 315\n");
                         set_angle(315);                     
                         set_torque(10, 10);
                         delay_puro(2000);
-                        //break;
                     }
-                    else{
-                        puts("v 225\n");                        
+                    else{                     
                         set_angle(225);
                         set_torque(10, 10);
                         delay_puro(2000);
-                        //break;
                     }
                     return;
                 }
@@ -180,66 +171,51 @@ void delay(int t_d){
                     set_torque(30,30);
                     delay_puro(400);
                     if(deltaZ > 0){
-                        puts("v 135\n");
                         set_angle(135);    
                         set_torque(10, 10);
                         delay_puro(2000);
-                        //break;
                     }
-                    else{
-                        puts("v 45\n");                        
+                    else{                       
                         set_angle(45);
                         set_torque(10, 10);
                         delay_puro(2000);
-                        //break;
                     }
                     return;
                 }
                 else if(deltaZ > 0 && estado == 0){
                     set_torque(-80,-80);
-                    puts("I-P\n");
                     delay_puro(500);
                     set_torque(30,30);
                     delay_puro(400);
                     if(deltaX > 0){
-                        puts("v 315\n");
                         set_angle(315);    
                         set_torque(10, 10);
                         delay_puro(2000);
-                        //break;
                     }
-                    else{
-                        puts("v 45\n");                        
+                    else{                     
                         set_angle(45);
                         set_torque(10, 10);
                         delay_puro(2000);
-                        //break;
                     }
                     return;
                 }
                 else if(deltaZ < 0 && estado == 180){
                     set_torque(-80,-80);
-                    puts("I-P\n");
                     delay_puro(500);
                     set_torque(30,30);
                     delay_puro(400);
                     if(deltaX < 0){
-                        puts("v 135\n");
                         set_angle(135);    
                         set_torque(10, 10);
                         delay_puro(2000);
-                        //break;
                     }
-                    else{
-                        puts("v 225\n");                        
+                    else{                       
                         set_angle(225);
                         set_torque(10, 10);
                         delay_puro(2000);
-                        //break;
                     }
                     return;
                 }
-                puts("pao\n");
             }
         }
         nt_d = get_time();
@@ -251,19 +227,22 @@ void delay(int t_d){
 
 
 int main(){
-    /*Posição inicial do uóli: (734, 105, -75);*/
     delay_puro(500); 
     set_head_servo(2,82);
     delay_puro(100);
     set_torque(-10, -10);
     delay_puro(2000);
+    /*vai procurar cada amigo, em ordem*/
     for(int i = 0; i<(sizeof(friends_locations)/sizeof(friends_locations[0])); i++){
         Vector3* pos;
         get_current_GPS_position(pos);
         amigo = friends_locations[i];
+        /*enquanto estiver longe do amigo*/
         while(distancia(pos, &amigo) > 5){
             get_current_GPS_position(pos);
+            /*calcula a diferença na coordenada X, e se aproxima nesse direção*/
             int deltaX = amigo.x - pos->x;
+
             if(deltaX>0){
                 puts("virou 90\n");
                 set_angle(90);
@@ -276,19 +255,22 @@ int main(){
                 estado = 270;
             }
             set_torque(10,10);
+            /*delay é proporcional a distancia, pra que ele ande mais se a distancia estiver grande*/
             delay(deltaX*120+400);
 
+            /*verifica se depois de andar chegou perto do amigo*/
             get_current_GPS_position(pos);            
             if(distancia(pos, &amigo) <= 5){
+                /*se sim, da uma freiada*/
                 set_torque(-50,-50);
                 delay_puro(500);
                 set_torque(40,40);
                 delay_puro(200);
-                puts("AAA\n");
                 break;
             }
 
             get_current_GPS_position(pos);
+            /*calcula a diferença na coordenada Z, e se aproxima nesse direção*/
             int deltaZ = amigo.z - pos->z;
             if(deltaZ<0){
                 puts("virou 180\n");
@@ -302,6 +284,7 @@ int main(){
                 estado = 0;
             }
             set_torque(10,10);
+            /*delay é proporcional a distancia, pra que ele ande mais se a distancia estiver grande*/
             delay(deltaZ*120+400);
             get_current_GPS_position(pos);
 
@@ -311,13 +294,12 @@ int main(){
         puts(amigo_char);
         puts("\n");
         
+        /*printa o tempo que ja foi decorrido pra encontrar amigo*/
         char str_tempo[10];
         tostring(str_tempo, (get_time()/1000));
         puts("t: ");
         puts(str_tempo);
     }
     set_torque(0, 0);
-    
-    /*depois printar o tempo final pra ver quanto tempo ele gastou*/
     return 0;
 }

@@ -1,4 +1,11 @@
-#A subcamada SOUL deve gerenciar o hardware do sistema e prover serviços para a subcamada BiCo através das chamadas de sistemas.
+#**************************************************************** 
+#* Description: Sistema Operacional UóLi (SOUL).
+#*
+#* Authors: Francisco Namias Vicente
+#*          Luiz Felipe Eike Kina
+#*
+#* Date: 2019
+#***************************************************************/
 
 .align 4
 int_handler:
@@ -96,10 +103,11 @@ int_handler:
 
 	######### SERVO_ANGLES #########
 	set_servo_angles:
-		beq zero, a0, set_servo_angle_base
 		li t0, 1
-		beq t0, a0, set_servo_angle_mid
+		beq t0, a0, set_servo_angle_base
 		li t0, 2
+		beq t0, a0, set_servo_angle_mid
+		li t0, 3
 		beq t0, a0, set_servo_angle_top
 		li a0, -2
 		j final
